@@ -59,3 +59,10 @@ TEST_CASE("mixed arguments")
 
     CHECK(s == "Hello world!");
 }
+
+TEST_CASE("concatenate long string")
+{
+    auto const s = zpp::concat_string("The", ' ', "quick", ' ', "brown", ' ', "fox", ' ', "jumps", ' ', "over", ' ', "the", ' ', "fence", '.');
+
+    CHECK(s == "The quick brown fox jumps over the fence.");
+}
