@@ -2,7 +2,6 @@
 #define ZPP_CONCAT_STRING_HPP
 
 #include <cstddef>
-#include <cstring>
 #include <string>
 #include <utility>
 
@@ -25,14 +24,20 @@ namespace zpp
             return 1;
         }
 
-        inline std::size_t string_size_impl(char const* p_str)
+        inline std::size_t string_size_impl(char16_t)
         {
-            return std::strlen(p_str);
+            return 1;
         }
 
-        inline std::size_t string_size_impl(wchar_t const* p_wstr)
+        inline std::size_t string_size_impl(char32_t)
         {
-            return std::wcslen(p_wstr);
+            return 1;
+        }
+
+        template <typename CharT>
+        std::size_t string_size_impl(CharT const* p_str)
+        {
+            return std::char_traits<CharT>::length(p_str);
         }
 
         template <typename T>
@@ -82,6 +87,24 @@ namespace zpp
     std::wstring concat_wstring(Ts const&... args)
     {
         std::wstring base_str;
+        base_str.reserve(detail::string_size_impl(args...));
+        detail::concat_string_impl(base_str, args...);
+        return base_str;
+    }
+
+    template <typename... Ts>
+    std::u16string concat_u16string(Ts const&... args)
+    {
+        std::u16string base_str;
+        base_str.reserve(detail::string_size_impl(args...));
+        detail::concat_string_impl(base_str, args...);
+        return base_str;
+    }
+
+    template <typename... Ts>
+    std::u32string concat_u32string(Ts const&... args)
+    {
+        std::u32string base_str;
         base_str.reserve(detail::string_size_impl(args...));
         detail::concat_string_impl(base_str, args...);
         return base_str;
