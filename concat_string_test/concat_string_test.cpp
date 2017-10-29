@@ -2,6 +2,7 @@
 
 #include <catch/single_include/catch.hpp>
 
+#include <initializer_list>
 #include <string>
 
 TEST_CASE("zero arguments")
@@ -56,6 +57,13 @@ TEST_CASE("three argument literals")
 TEST_CASE("mixed arguments")
 {
     auto const s = zpp::concat_string("Hello", std::string(" "), "world!");
+
+    CHECK(s == "Hello world!");
+}
+
+TEST_CASE("mixed arguments with initializer_list")
+{
+    auto const s = zpp::concat_string("Hello", ' ', std::initializer_list<char>{ 'w', 'o', 'r', 'l', 'd', '!' });
 
     CHECK(s == "Hello world!");
 }

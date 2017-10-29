@@ -25,7 +25,8 @@ namespace zpp
             return std::strlen(p_str);
         }
 
-        inline std::string::size_type string_size_impl(std::string const& str)
+        template <typename T>
+        typename T::size_type string_size_impl(T const& str)
         {
             return str.size();
         }
