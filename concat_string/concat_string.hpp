@@ -74,40 +74,37 @@ namespace zpp
         }
     }
 
-    template <typename... Ts>
-    std::string concat_string(Ts const&... args)
+    template <typename CharT, typename Traits, typename Alloc, typename... Ts>
+    std::basic_string<CharT, Traits, Alloc> concat_basic_string(Ts const&... args)
     {
-        std::string base_str;
+        std::basic_string<CharT, Traits, Alloc> base_str;
         base_str.reserve(detail::string_size_impl(args...));
         detail::concat_string_impl(base_str, args...);
         return base_str;
+    }
+
+    template <typename... Ts>
+    std::string concat_string(Ts const&... args)
+    {
+        return concat_basic_string<std::string::value_type, std::string::traits_type, std::string::allocator_type>(args...);
     }
 
     template <typename... Ts>
     std::wstring concat_wstring(Ts const&... args)
     {
-        std::wstring base_str;
-        base_str.reserve(detail::string_size_impl(args...));
-        detail::concat_string_impl(base_str, args...);
-        return base_str;
+        return concat_basic_string<std::wstring::value_type, std::wstring::traits_type, std::wstring::allocator_type>(args...);
     }
 
     template <typename... Ts>
     std::u16string concat_u16string(Ts const&... args)
     {
-        std::u16string base_str;
-        base_str.reserve(detail::string_size_impl(args...));
-        detail::concat_string_impl(base_str, args...);
-        return base_str;
+        return concat_basic_string<std::u16string::value_type, std::u16string::traits_type, std::u16string::allocator_type>(args...);
     }
 
     template <typename... Ts>
     std::u32string concat_u32string(Ts const&... args)
     {
-        std::u32string base_str;
-        base_str.reserve(detail::string_size_impl(args...));
-        detail::concat_string_impl(base_str, args...);
-        return base_str;
+        return concat_basic_string<std::u32string::value_type, std::u32string::traits_type, std::u32string::allocator_type>(args...);
     }
 }
 
