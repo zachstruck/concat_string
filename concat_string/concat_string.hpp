@@ -20,9 +20,19 @@ namespace zpp
             return 1;
         }
 
+        inline std::size_t string_size_impl(wchar_t)
+        {
+            return 1;
+        }
+
         inline std::size_t string_size_impl(char const* p_str)
         {
             return std::strlen(p_str);
+        }
+
+        inline std::size_t string_size_impl(wchar_t const* p_wstr)
+        {
+            return std::wcslen(p_wstr);
         }
 
         template <typename T>
@@ -37,20 +47,21 @@ namespace zpp
             return string_size_impl(str) + string_size_impl(args...);
         }
 
-        inline void concat_string_impl(std::string const&)
+        template <typename CharT, typename Traits, typename Alloc>
+        void concat_string_impl(std::basic_string<CharT, Traits, Alloc> const&)
         {
         }
 
-        template <typename... Ts>
-        void concat_string_impl(std::string& base_str, char ch, Ts const&... args)
+        template <typename CharT, typename Traits, typename Alloc, typename... Ts>
+        void concat_string_impl(std::basic_string<CharT, Traits, Alloc>& base_str, CharT ch, Ts const&... args)
         {
             base_str.push_back(ch);
 
             concat_string_impl(base_str, args...);
         }
 
-        template <typename T, typename... Ts>
-        void concat_string_impl(std::string& base_str, T const& str, Ts const&... args)
+        template <typename CharT, typename Traits, typename Alloc, typename T, typename... Ts>
+        void concat_string_impl(std::basic_string<CharT, Traits, Alloc>& base_str, T const& str, Ts const&... args)
         {
             base_str.append(str);
 
@@ -62,6 +73,15 @@ namespace zpp
     std::string concat_string(Ts const&... args)
     {
         std::string base_str;
+        base_str.reserve(detail::string_size_impl(args...));
+        detail::concat_string_impl(base_str, args...);
+        return base_str;
+    }
+
+    template <typename... Ts>
+    std::wstring concat_wstring(Ts const&... args)
+    {
+        std::wstring base_str;
         base_str.reserve(detail::string_size_impl(args...));
         detail::concat_string_impl(base_str, args...);
         return base_str;

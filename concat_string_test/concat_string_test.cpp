@@ -74,3 +74,10 @@ TEST_CASE("concatenate long string")
 
     CHECK(s == "The quick brown fox jumps over the fence.");
 }
+
+TEST_CASE("concatenate long wstring")
+{
+    auto const s = zpp::concat_wstring(L"The", L' ', L"quick", L' ', L"brown", L' ', L"fox", L' ', L"jumps", L' ', L"over", L' ', L"the", L' ', L"fence", L'.');
+
+    CHECK(s == L"The quick brown fox jumps over the fence.");
+}
