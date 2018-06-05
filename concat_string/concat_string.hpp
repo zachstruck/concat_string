@@ -10,13 +10,13 @@ namespace zpp
     namespace detail
     {
         template <typename CharT>
-        std::size_t string_size_impl()
+        std::size_t string_size_impl() noexcept
         {
             return 0;
         }
 
         template <typename CharT>
-        std::size_t string_size_impl(CharT)
+        std::size_t string_size_impl(CharT) noexcept
         {
             return 1;
         }
@@ -40,7 +40,7 @@ namespace zpp
         }
 
         template <typename CharT, typename Traits, typename Alloc>
-        void concat_string_impl(std::basic_string<CharT, Traits, Alloc> const&)
+        void concat_string_impl(std::basic_string<CharT, Traits, Alloc> const&) noexcept
         {
         }
 
