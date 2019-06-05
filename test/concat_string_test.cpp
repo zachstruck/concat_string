@@ -1,6 +1,6 @@
-#include <concat_string/concat_string.hpp>
+#include <zpp/concat_string.hpp>
 
-#include <catch/single_include/catch.hpp>
+#include <catch2/catch.hpp>
 
 #include <initializer_list>
 #include <string>
