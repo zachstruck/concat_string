@@ -33,28 +33,6 @@
 #define ZPP_CXX14(X) ZPP_CXX14_PRIV_DEF_##X()
 #define ZPP_CXX17(X) ZPP_CXX17_PRIV_DEF_##X()
 
-#if ZPP_TARGET_COMPILER(CLANG)
-#  if __cplusplus > 201703L
-#    define ZPP_CXX17_PRIV_DEF_CONSTEXPR_CHAR_TRAITS_LENGTH() 1
-#  else
-#    define ZPP_CXX17_PRIV_DEF_CONSTEXPR_CHAR_TRAITS_LENGTH() 0
-#  endif
-#elif ZPP_TARGET_COMPILER(GCC)
-#  if __cplusplus > 201703L
-#    define ZPP_CXX17_PRIV_DEF_CONSTEXPR_CHAR_TRAITS_LENGTH() 1
-#  else
-#    define ZPP_CXX17_PRIV_DEF_CONSTEXPR_CHAR_TRAITS_LENGTH() 0
-#  endif
-#elif ZPP_TARGET_COMPILER(MSVC)
-#  if _MSC_VER >= 1900 && _MSVC_LANG > 201703L
-#    define ZPP_CXX17_PRIV_DEF_CONSTEXPR_CHAR_TRAITS_LENGTH() 1
-#  else
-#    define ZPP_CXX17_PRIV_DEF_CONSTEXPR_CHAR_TRAITS_LENGTH() 0
-#  endif
-#elif ZPP_TARGET_COMPILER(UNKNOWN)
-#  define ZPP_CONSTEXPR_CHAR_TRAITS_LENGTH() 0
-#endif
-
 // FIXME
 // Update C++ number
 // after C++2a is released
@@ -97,17 +75,13 @@ namespace zpp
         }
 
         template <typename CharT, typename T>
-#if ZPP_CXX17(CONSTEXPR_CHAR_TRAITS_LENGTH)
         constexpr std::size_t string_size_impl(T const* p_str)
-#else
-        std::size_t string_size_impl(T const* p_str)
-#endif
         {
             return std::char_traits<CharT>::length(p_str);
         }
 
         template <typename CharT, typename T>
-        typename T::size_type string_size_impl(T const& str) noexcept(noexcept(str.size()))
+        constexpr typename T::size_type string_size_impl(T const& str) noexcept(noexcept(str.size()))
         {
             return str.size();
         }

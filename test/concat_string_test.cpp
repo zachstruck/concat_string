@@ -6,6 +6,32 @@
 #include <string>
 
 #if ZPP_TARGET_COMPILER(CLANG)
+#  if __clang_major__ >= 4 && __cplusplus >= 201703L
+#    define ZPP_CXX17_PRIV_DEF_STRING_VIEW() 1
+#  else
+#    define ZPP_CXX17_PRIV_DEF_STRING_VIEW() 0
+#  endif
+#elif ZPP_TARGET_COMPILER(GCC)
+#  if __GNUC__ >= 7 && __cplusplus >= 201703L
+#    define ZPP_CXX17_PRIV_DEF_STRING_VIEW() 1
+#  else
+#    define ZPP_CXX17_PRIV_DEF_STRING_VIEW() 0
+#  endif
+#elif ZPP_TARGET_COMPILER(MSVC)
+#  if _MSC_VER >= 1910 && _MSVC_LANG >= 201703L
+#    define ZPP_CXX17_PRIV_DEF_STRING_VIEW() 1
+#  else
+#    define ZPP_CXX17_PRIV_DEF_STRING_VIEW() 0
+#  endif
+#elif ZPP_TARGET_COMPILER(UNKNOWN)
+#  define ZPP_STRING_VIEW() 0
+#endif
+
+#if ZPP_CXX17(STRING_VIEW)
+#include <string_view>
+#endif
+
+#if ZPP_TARGET_COMPILER(CLANG)
 #  if (__clang_major__ >= 4 || __clang_major__ == 3 && __clang_minor__ >= 6) && __cplusplus >= 201703L
 #    define ZPP_CXX17_PRIV_DEF_U8_CHAR_LIT() 1
 #  else
@@ -27,6 +53,28 @@
 #  define ZPP_U8_CHAR_LIT() 0
 #endif
 
+#if ZPP_TARGET_COMPILER(CLANG)
+#  if __cplusplus >= 201703L
+#    define ZPP_CXX17_PRIV_DEF_CONSTEXPR_CHAR_TRAITS_LENGTH() 1
+#  else
+#    define ZPP_CXX17_PRIV_DEF_CONSTEXPR_CHAR_TRAITS_LENGTH() 0
+#  endif
+#elif ZPP_TARGET_COMPILER(GCC)
+#  if __cplusplus >= 201703L
+#    define ZPP_CXX17_PRIV_DEF_CONSTEXPR_CHAR_TRAITS_LENGTH() 1
+#  else
+#    define ZPP_CXX17_PRIV_DEF_CONSTEXPR_CHAR_TRAITS_LENGTH() 0
+#  endif
+#elif ZPP_TARGET_COMPILER(MSVC)
+#  if _MSC_VER >= 1900 && _MSVC_LANG >= 201703L
+#    define ZPP_CXX17_PRIV_DEF_CONSTEXPR_CHAR_TRAITS_LENGTH() 1
+#  else
+#    define ZPP_CXX17_PRIV_DEF_CONSTEXPR_CHAR_TRAITS_LENGTH() 0
+#  endif
+#elif ZPP_TARGET_COMPILER(UNKNOWN)
+#  define ZPP_CONSTEXPR_CHAR_TRAITS_LENGTH() 0
+#endif
+
 TEST_CASE("constexpr length")
 {
     static_assert(zpp::detail::string_size_impl<char>() == 0, "");
@@ -36,11 +84,19 @@ TEST_CASE("constexpr length")
     static_assert(zpp::detail::string_size_impl<char>("hi") == 2, "");
     static_assert(zpp::detail::string_size_impl<char>("hi", "!") == 3, "");
 #endif
+#if ZPP_CXX17(STRING_VIEW)
+    using namespace std::string_view_literals;
+    static_assert(zpp::detail::string_size_impl<char>("hi"sv) == 2, "");
+    static_assert(zpp::detail::string_size_impl<char>("hi"sv, "!"sv) == 3, "");
+#endif
 }
 
 TEST_CASE("noexcept size")
 {
     static_assert(noexcept(zpp::detail::string_size_impl<char>(std::string{})), "");
+#if ZPP_CXX17(STRING_VIEW)
+    static_assert(noexcept(zpp::detail::string_size_impl<char>(std::string_view{})), "");
+#endif
 }
 
 TEST_CASE("zero arguments")
@@ -105,6 +161,16 @@ TEST_CASE("mixed arguments with initializer_list")
 
     CHECK(s == "Hello world!");
 }
+
+#if ZPP_CXX17(STRING_VIEW)
+TEST_CASE("mixed arguments with string_view")
+{
+    using namespace std::string_view_literals;
+    auto const s = zpp::concat_string("Hello"sv, ' ', std::initializer_list<char>{ 'w', 'o', 'r', 'l', 'd', '!' });
+
+    CHECK(s == "Hello world!");
+}
+#endif
 
 TEST_CASE("concatenate long string")
 {
