@@ -93,7 +93,7 @@ namespace zpp
         }
 
         template <typename CharT, typename Traits, typename Alloc>
-        constexpr void concat_string_impl(std::basic_string<CharT, Traits, Alloc> const&) noexcept
+        void concat_string_impl(std::basic_string<CharT, Traits, Alloc> const&) noexcept
         {
         }
 
