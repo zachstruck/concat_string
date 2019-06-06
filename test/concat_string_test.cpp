@@ -5,34 +5,6 @@
 #include <initializer_list>
 #include <string>
 
-#define ZPP_TARGET_COMPILER(X) ZPP_TARGET_COMPILER_PRIV_DEF_##X()
-#if defined(__clang__)
-#  define ZPP_TARGET_COMPILER_PRIV_DEF_CLANG() 1
-#  define ZPP_TARGET_COMPILER_PRIV_DEF_GCC() 0
-#  define ZPP_TARGET_COMPILER_PRIV_DEF_MSVC() 0
-#  define ZPP_TARGET_COMPILER_PRIV_DEF_UNKNOWN() 0
-#elif defined(__GNUC__)
-#  define ZPP_TARGET_COMPILER_PRIV_DEF_CLANG() 0
-#  define ZPP_TARGET_COMPILER_PRIV_DEF_GCC() 1
-#  define ZPP_TARGET_COMPILER_PRIV_DEF_MSVC() 0
-#  define ZPP_TARGET_COMPILER_PRIV_DEF_UNKNOWN() 0
-#elif defined(_MSC_VER)
-#  define ZPP_TARGET_COMPILER_PRIV_DEF_CLANG() 0
-#  define ZPP_TARGET_COMPILER_PRIV_DEF_GCC() 0
-#  define ZPP_TARGET_COMPILER_PRIV_DEF_MSVC() 1
-#  define ZPP_TARGET_COMPILER_PRIV_DEF_UNKNOWN() 0
-#else
-#  define ZPP_TARGET_COMPILER_PRIV_DEF_CLANG() 0
-#  define ZPP_TARGET_COMPILER_PRIV_DEF_GCC() 0
-#  define ZPP_TARGET_COMPILER_PRIV_DEF_MSVC() 0
-#  define ZPP_TARGET_COMPILER_PRIV_DEF_UNKNOWN() 1
-#endif
-
-#define ZPP_CXX03(X) ZPP_CXX03_PRIV_DEF_##X()
-#define ZPP_CXX11(X) ZPP_CXX11_PRIV_DEF_##X()
-#define ZPP_CXX14(X) ZPP_CXX14_PRIV_DEF_##X()
-#define ZPP_CXX17(X) ZPP_CXX17_PRIV_DEF_##X()
-
 #if ZPP_TARGET_COMPILER(CLANG)
 #  if (__clang_major__ >= 4 || __clang_major__ == 3 && __clang_minor__ >= 6) && __cplusplus >= 201703L
 #    define ZPP_CXX17_PRIV_DEF_U8_CHAR_LIT() 1
@@ -136,6 +108,15 @@ TEST_CASE("concatenate long wstring")
 TEST_CASE("concatenate long string with u8 literals")
 {
     auto const s = zpp::concat_string(u8"The", u8' ', u8"quick", u8' ', u8"brown", u8' ', u8"fox", u8' ', u8"jumps", u8' ', u8"over", u8' ', u8"the", u8' ', u8"fence", u8'.');
+
+    CHECK(s == u8"The quick brown fox jumps over the fence.");
+}
+#endif
+
+#if ZPP_CXX17(CHAR8_T) && ZPP_CXX17(U8_CHAR_LIT)
+TEST_CASE("concatenate long u8string with u8 literals")
+{
+    auto const s = zpp::concat_u8string(u8"The", u8' ', u8"quick", u8' ', u8"brown", u8' ', u8"fox", u8' ', u8"jumps", u8' ', u8"over", u8' ', u8"the", u8' ', u8"fence", u8'.');
 
     CHECK(s == u8"The quick brown fox jumps over the fence.");
 }

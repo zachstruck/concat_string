@@ -5,6 +5,59 @@
 #include <string>
 #include <utility>
 
+#define ZPP_TARGET_COMPILER(X) ZPP_TARGET_COMPILER_PRIV_DEF_##X()
+#if defined(__clang__)
+#  define ZPP_TARGET_COMPILER_PRIV_DEF_CLANG() 1
+#  define ZPP_TARGET_COMPILER_PRIV_DEF_GCC() 0
+#  define ZPP_TARGET_COMPILER_PRIV_DEF_MSVC() 0
+#  define ZPP_TARGET_COMPILER_PRIV_DEF_UNKNOWN() 0
+#elif defined(__GNUC__)
+#  define ZPP_TARGET_COMPILER_PRIV_DEF_CLANG() 0
+#  define ZPP_TARGET_COMPILER_PRIV_DEF_GCC() 1
+#  define ZPP_TARGET_COMPILER_PRIV_DEF_MSVC() 0
+#  define ZPP_TARGET_COMPILER_PRIV_DEF_UNKNOWN() 0
+#elif defined(_MSC_VER)
+#  define ZPP_TARGET_COMPILER_PRIV_DEF_CLANG() 0
+#  define ZPP_TARGET_COMPILER_PRIV_DEF_GCC() 0
+#  define ZPP_TARGET_COMPILER_PRIV_DEF_MSVC() 1
+#  define ZPP_TARGET_COMPILER_PRIV_DEF_UNKNOWN() 0
+#else
+#  define ZPP_TARGET_COMPILER_PRIV_DEF_CLANG() 0
+#  define ZPP_TARGET_COMPILER_PRIV_DEF_GCC() 0
+#  define ZPP_TARGET_COMPILER_PRIV_DEF_MSVC() 0
+#  define ZPP_TARGET_COMPILER_PRIV_DEF_UNKNOWN() 1
+#endif
+
+#define ZPP_CXX03(X) ZPP_CXX03_PRIV_DEF_##X()
+#define ZPP_CXX11(X) ZPP_CXX11_PRIV_DEF_##X()
+#define ZPP_CXX14(X) ZPP_CXX14_PRIV_DEF_##X()
+#define ZPP_CXX17(X) ZPP_CXX17_PRIV_DEF_##X()
+
+// FIXME
+// Update C++ number
+// after C++2a is released
+#if ZPP_TARGET_COMPILER(CLANG)
+#  if __clang_major__ >= 7 && __cplusplus > 201703L
+#    define ZPP_CXX17_PRIV_DEF_CHAR8_T() 1
+#  else
+#    define ZPP_CXX17_PRIV_DEF_CHAR8_T() 0
+#  endif
+#elif ZPP_TARGET_COMPILER(GCC)
+#  if __GNUC__  >= 7 && __cplusplus > 201703L
+#    define ZPP_CXX17_PRIV_DEF_CHAR8_T() 1
+#  else
+#    define ZPP_CXX17_PRIV_DEF_CHAR8_T() 0
+#  endif
+#elif ZPP_TARGET_COMPILER(MSVC)
+#  if _MSC_VER >= 1922 && _MSVC_LANG > 201703L
+#    define ZPP_CXX17_PRIV_DEF_CHAR8_T() 1
+#  else
+#    define ZPP_CXX17_PRIV_DEF_CHAR8_T() 0
+#  endif
+#elif ZPP_TARGET_COMPILER(UNKNOWN)
+#  define ZPP_CHAR8_T() 0
+#endif
+
 namespace zpp
 {
     namespace detail
@@ -96,6 +149,14 @@ namespace zpp
     {
         return concat_basic_string<std::wstring::value_type>(args...);
     }
+
+#if ZPP_CXX17(CHAR8_T)
+    template <typename... Ts>
+    std::u8string concat_u8string(Ts const& ... args)
+    {
+        return concat_basic_string<std::u8string::value_type>(args...);
+    }
+#endif
 
     template <typename... Ts>
     std::u16string concat_u16string(Ts const&... args)
