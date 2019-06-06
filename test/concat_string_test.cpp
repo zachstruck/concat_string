@@ -38,6 +38,11 @@ TEST_CASE("constexpr length")
 #endif
 }
 
+TEST_CASE("noexcept size")
+{
+    static_assert(noexcept(zpp::detail::string_size_impl<char>(std::string{})), "");
+}
+
 TEST_CASE("zero arguments")
 {
     auto const s = zpp::concat_string();

@@ -107,7 +107,7 @@ namespace zpp
         }
 
         template <typename CharT, typename T>
-        typename T::size_type string_size_impl(T const& str)
+        typename T::size_type string_size_impl(T const& str) noexcept(noexcept(str.size()))
         {
             return str.size();
         }
