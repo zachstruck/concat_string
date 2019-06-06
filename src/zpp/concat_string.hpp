@@ -44,6 +44,9 @@ namespace zpp
         {
         }
 
+        template <typename CharT, typename Traits, typename Alloc, typename T, typename... Ts>
+        void concat_string_impl(std::basic_string<CharT, Traits, Alloc>& base_str, T const& str, Ts const&... args);
+
         template <typename CharT, typename Traits, typename Alloc, typename... Ts>
         void concat_string_impl(std::basic_string<CharT, Traits, Alloc>& base_str, CharT ch, Ts const&... args)
         {
