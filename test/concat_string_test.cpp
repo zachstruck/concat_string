@@ -27,6 +27,17 @@
 #  define ZPP_U8_CHAR_LIT() 0
 #endif
 
+TEST_CASE("constexpr length")
+{
+    static_assert(zpp::detail::string_size_impl<char>() == 0, "");
+    static_assert(zpp::detail::string_size_impl<char>('a') == 1, "");
+    static_assert(zpp::detail::string_size_impl<char>('a', 'b') == 2, "");
+#if ZPP_CXX17(CONSTEXPR_CHAR_TRAITS_LENGTH)
+    static_assert(zpp::detail::string_size_impl<char>("hi") == 2, "");
+    static_assert(zpp::detail::string_size_impl<char>("hi", "!") == 3, "");
+#endif
+}
+
 TEST_CASE("zero arguments")
 {
     auto const s = zpp::concat_string();
